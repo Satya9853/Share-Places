@@ -16,7 +16,7 @@ const UsersList = (props) => {
     return <UsersItem key={user.id} id={user.id} image={user.image} name={user.name} placeCount={user.places} />;
   });
 
-  return <ul className="users-list">{listOfUsers}</ul>;
+  return <ul className={Style["users-list"]}>{listOfUsers}</ul>;
 };
 
 export default UsersList;
