@@ -2,22 +2,28 @@ import { NavLink } from "react-router-dom";
 
 import Style from "./Navlinks.module.css";
 
-const Navlinks = (props) => {
+const Navlinks = () => {
   return (
     <ul className={Style["nav-links"]}>
       <li>
-        <NavLink to="/" exact>
+        <NavLink to="/" exact={true} activeClassName={Style.active}>
           ALL USERS
         </NavLink>
       </li>
       <li>
-        <NavLink to="/u1/places">MY PLACES</NavLink>
+        <NavLink to="/u1/places" activeClassName={Style.active}>
+          MY PLACES
+        </NavLink>
       </li>
       <li>
-        <NavLink to="/places/new">ADD PLACES</NavLink>
+        <NavLink to="/places/new" activeClassName={Style.active}>
+          ADD PLACES
+        </NavLink>
       </li>
       <li>
-        <NavLink to="/auth">AUTHENTICATE</NavLink>
+        <NavLink to="/auth" activeClassName={Style.active}>
+          AUTHENTICATE
+        </NavLink>
       </li>
     </ul>
   );
