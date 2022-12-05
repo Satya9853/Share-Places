@@ -1,12 +1,15 @@
-import Style from "./Users-List.module.css";
 import UsersItem from "./Users-Item";
+import Card from "../../shared/components/UI-Elements/Card";
+import Style from "./Users-List.module.css";
 
 const UsersList = (props) => {
   //! if no user is found then we simply return a message
   if (props.items.length === 0) {
     return (
       <div className="center">
-        <h2>No users found.</h2>
+        <Card>
+          <h2>No users found.</h2>
+        </Card>
       </div>
     );
   }
