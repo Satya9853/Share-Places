@@ -35,24 +35,38 @@ const NewPlace = () => {
     dispatch({ type: "INPUT_CHANGE", value: value, inputId: id, isValid: isValid });
   }, []);
 
+  const placeSubmitHandler = (event) => {
+    event.preventDefault();
+    console.log(formState.inputs); // send this to backend
+  };
+
   return (
-    <form className={Style["place-form"]}>
+    <form className={Style["place-form"]} onSubmit={placeSubmitHandler}>
       <Input
         id="title"
         element="input"
-        type="text"
         label="Title"
         validators={[VALIDATOR_REQUIRE()]}
         errorText="Please enter a valid title"
         onInput={inputChangeHandler}
       />
+
       <Input
         id="description"
         element="textarea"
         type="text"
-        label="description"
+        label="Description"
         validators={[VALIDATOR_MINLENGTH(5)]}
         errorText="Please enter a valid description (at least 5 characters)."
+        onInput={inputChangeHandler}
+      />
+
+      <Input
+        id="address"
+        element="input"
+        label="Address"
+        validators={[VALIDATOR_REQUIRE()]}
+        errorText="Please enter a valid address"
         onInput={inputChangeHandler}
       />
       <Button type="submit" disabled={!formState.isValid}>
