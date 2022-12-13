@@ -1,5 +1,6 @@
 import Card from "../../shared/components/UI-Elements/Card";
 import PlaceItem from "./Place-Item";
+import Button from "../../shared/components/Form-Elements/Button";
 import Style from "./Place-List.module.css";
 
 const PlaceList = (props) => {
@@ -9,7 +10,7 @@ const PlaceList = (props) => {
       <div className={`${Style["place-list"]} center`}>
         <Card>
           <h2>No places found. Maybe create one?</h2>
-          <button>Share Place</button>
+          <Button to="/places/new">Share Place</Button>
         </Card>
       </div>
     );
