@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema({
 
   image: { type: String, required: [true, "Please provide the image"] },
 
-  places: [{ type: mongoose.Types.ObjectId, required: [true, "Please provide the places"], ref: "User" }],
+  places: [{ type: mongoose.Types.ObjectId, required: [true, "Please provide the places"], ref: "Place" }],
 });
 
 userSchema.plugin(uniqueValidator);

@@ -1,9 +1,9 @@
 const { getPlaceByID, getPlacesByUserID, createPlace, updatePlaceByID, deletePlaceByID } = require("../controller/places-controller");
 
-const Route = require("express").Router();
+const router = require("express").Router();
 
-Route.route("/:placeID").get(getPlaceByID).patch(updatePlaceByID).delete(deletePlaceByID);
-Route.route("/:userID").get(getPlacesByUserID);
-Route.route("/").post(createPlace);
+router.route("/:placeID").get(getPlaceByID).patch(updatePlaceByID).delete(deletePlaceByID);
+router.route("/:userID").get(getPlacesByUserID);
+router.route("/").post(createPlace);
 
-module.exports = Route;
+module.exports = router;

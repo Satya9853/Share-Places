@@ -1,10 +1,10 @@
 const { StatusCodes } = require("http-status-codes");
 
 const UserModel = require("../model/users-schema");
-const { BadRequestError, NotFoundError, CustomApiError } = require("../errors/index");
+const { BadRequestError, NotFoundError, CustomApiError, UnauthenticatedError } = require("../errors/index");
 
 exports.getUsers = async (req, res, next) => {
-  const users = await UserModel.find({}).select("-password");
+  let users = await UserModel.find({}).select("-password");
 
   if (!users) throw new NotFoundError("Currently there are no users");
 
@@ -13,7 +13,20 @@ exports.getUsers = async (req, res, next) => {
   res.status(StatusCodes.OK).json({ users });
 };
 
-exports.userSignup = async (req, res, next) => {};
+exports.userSignup = async (req, res, next) => {
+  const user = await UserModel.create(req.body);
+
+  res.status(StatusCodes.CREATED).json({ user: { name: user.name } });
+};
+
 exports.userLogin = async (req, res, next) => {
-  res.status(200).json({ message: "Working" });
+  const { email, password } = req.body;
+
+  if (!email || !password) throw new BadRequestError("Please provide email and password");
+
+  const user = await UserModel.findOne({ email });
+
+  if (!user) throw new UnauthenticatedError("Invalid Credentials");
+
+  res.status(StatusCodes.OK).json({ user: { name: user.name } });
 };

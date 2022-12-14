@@ -1,9 +1,11 @@
+const mongoose = require("mongoose");
 const { StatusCodes } = require("http-status-codes");
 const { validationResult } = require("express-validator");
 
 const { BadRequestError, NotFoundError, CustomApiError } = require("../errors/index");
 const getCoordsForAddress = require("../util/location");
 const PlaceModel = require("../model/places-schema");
+const UserModel = require("../model/users-schema");
 
 exports.getPlaceByID = async (req, res, next) => {
   const placeID = req.params.placeID;
@@ -30,21 +32,31 @@ exports.createPlace = async (req, res, next) => {
   const error = validationResult(req);
   if (!error.isEmpty()) throw new BadRequestError("Invalid inputs passed, please check your data");
 
-  const { address } = req.body;
+  const { address, creator } = req.body;
 
-  const coordinates = getCoordsForAddress(address);
-  if (!coordinates) throw new Error();
+  const user = await UserModel.findById(creator);
+  if (!user) throw new NotFoundError("User Not Found ");
+
+  // if we dont get any result for location coordinates recieves a badrequest object
+  const coordinates = await getCoordsForAddress(address);
+  if (coordinates instanceof BadRequestError) throw coordinates;
 
   const newPlace = {
     ...req.body,
     location: coordinates,
   };
 
-  const createdPlace = await PlaceModel.create(newPlace);
+  //  setting a transaction session which will roll back is any of the task fails
+  const transaction_session = await mongoose.startSession();
+  transaction_session.startTransaction();
+  const createdPlace = await PlaceModel.create([newPlace], { session: transaction_session });
+  await user.updateOne({ $push: { places: createdPlace } }, { session: transaction_session });
+  transaction_session.commitTransaction();
 
   if (!createdPlace) throw new Error();
+  console.log(createdPlace);
 
-  res.status(StatusCodes.CREATED).json({ place: createdPlace.toObject({ getters: true }) });
+  res.status(StatusCodes.CREATED).json({ place: createdPlace });
 };
 
 exports.updatePlaceByID = async (req, res, next) => {

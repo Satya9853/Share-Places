@@ -29,8 +29,8 @@ app.use(cors());
 app.use(xss());
 
 // Route Middlewares
-app.use("/api/v1/places", placesRouter);
 app.use("/api/v1/users", usersRouter);
+app.use("/api/v1/places", placesRouter);
 
 // error handling middleware
 app.use(routeNotFoundMiddleware);
