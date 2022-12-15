@@ -16,7 +16,7 @@ const UsersList = (props) => {
 
   //* if there is even one user then we render the list of user using our UsersItem Component
   const listOfUsers = props.items.map((user) => {
-    return <UsersItem key={user.id} id={user.id} image={user.image} name={user.name} placeCount={user.places} />;
+    return <UsersItem key={user.id} id={user.id} image={user.image} name={user.name} placeCount={user.places.length} />;
   });
 
   return <ul className={Style["users-list"]}>{listOfUsers}</ul>;
