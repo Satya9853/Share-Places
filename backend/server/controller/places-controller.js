@@ -22,7 +22,7 @@ exports.getPlacesByUserID = async (req, res, next) => {
 
   const places = await PlaceModel.find({ creator: userID });
 
-  if (!places) throw new NotFoundError(`No place was found with userID ${userID}`);
+  if (!places || places.length === 0) throw new NotFoundError(`No place was found with userID ${userID}`);
 
   places = places.map((place) => place.toObject({ getters: true }));
   res.status(StatusCodes.OK).json({ places: places });
@@ -74,9 +74,14 @@ exports.updatePlaceByID = async (req, res, next) => {
 exports.deletePlaceByID = async (req, res, next) => {
   const placeID = req.params.placeID;
 
-  const deletedPlace = await PlaceModel.findOneAndRemove({ _id: placeID });
-
+  //  setting a transaction session which will roll back is any of the task fails
+  const transaction_session = await mongoose.startSession();
+  transaction_session.startTransaction();
+  const deletedPlace = await PlaceModel.findOneAndRemove({ _id: placeID }, { session: transaction_session }).populate("creator");
   if (!deletedPlace) throw new NotFoundError(`No place was found with placeID :${placeID}`);
+  await deletedPlace.creator.places.pull(deletedPlace);
+  await deletedPlace.creator.save({ session: transaction_session });
+  await transaction_session.commitTransaction();
 
-  res.status(StatusCodes.OK).json({ place: deletedPlace.toObject({ getters: true }) });
+  res.status(StatusCodes.OK).json({ message: "Place Delete Successfully" });
 };
