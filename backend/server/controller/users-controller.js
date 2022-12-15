@@ -16,7 +16,7 @@ exports.getUsers = async (req, res, next) => {
 exports.userSignup = async (req, res, next) => {
   const user = await UserModel.create(req.body);
 
-  res.status(StatusCodes.CREATED).json({ user: { name: user.name } });
+  res.status(StatusCodes.CREATED).json({ user: { name: user.name, id: user._id } });
 };
 
 exports.userLogin = async (req, res, next) => {
@@ -28,5 +28,5 @@ exports.userLogin = async (req, res, next) => {
 
   if (!user) throw new UnauthenticatedError("Invalid Credentials");
 
-  res.status(StatusCodes.OK).json({ user: { name: user.name } });
+  res.status(StatusCodes.OK).json({ user: { name: user.name, id: user._id } });
 };

@@ -20,7 +20,7 @@ exports.getPlaceByID = async (req, res, next) => {
 exports.getPlacesByUserID = async (req, res, next) => {
   const userID = req.params.userID;
 
-  const places = await PlaceModel.find({ creator: userID });
+  let places = await PlaceModel.find({ creator: userID });
 
   if (!places || places.length === 0) throw new NotFoundError(`No place was found with userID ${userID}`);
 
@@ -63,8 +63,12 @@ exports.updatePlaceByID = async (req, res, next) => {
   const error = validationResult(req);
   if (!error.isEmpty()) throw new BadRequestError("Invalid inputs passed, please check your data");
 
-  const placeID = req.params;
-  const updatedPlace = await PlaceModel.findByIdAndUpdate({ _id: placeID }, req.body, { new: true, runValidators: true });
+  const { title, description } = req.body;
+  const placeID = req.params.placeID;
+  console.log(placeID);
+  const updatedPlace = await PlaceModel.findByIdAndUpdate(placeID, { title: title, description: description }, { new: true, runValidators: true });
+
+  console.log(updatedPlace);
 
   if (!updatedPlace) throw new NotFoundError(`No place was found with placeID :${placeID}`);
 

@@ -1,5 +1,6 @@
 import { useState, useContext, Fragment } from "react";
 import { useForm } from "../../shared/hooks/form-hook";
+import { useHttpClient } from "../../shared/hooks/http-hook";
 
 import Card from "../../shared/components/UI-Elements/Card";
 import Input from "../../shared/components/Form-Elements/Input";
@@ -14,8 +15,6 @@ const Auth = (props) => {
   const auth = useContext(AuthContext);
 
   const [isLoginMode, setIsLoginMode] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(false);
 
   const [formState, inputChangeHandler, setFormData] = useForm(
     {
@@ -30,6 +29,8 @@ const Auth = (props) => {
     },
     false
   );
+
+  const { isLoading, error, sendRequest, clearError } = useHttpClient();
 
   const switchModeHandler = () => {
     if (!isLoginMode) {
@@ -68,29 +69,16 @@ const Auth = (props) => {
     };
 
     try {
-      setIsLoading(true);
-
-      const response = await fetch(URL, options);
-      const responseData = await response.json();
-      if (!response.ok) throw new Error(responseData.message);
-
-      setIsLoading(false);
+      const responseData = await sendRequest(URL, options.method, options.body, options.headers);
       console.log(responseData);
 
-      auth.login();
-    } catch (error) {
-      setIsLoading(false);
-      setError(error.message || "Something went wrong please try again");
-    }
-  };
-
-  const errorHandler = () => {
-    setError(null);
+      auth.login(responseData.user.id);
+    } catch (error) {}
   };
 
   return (
     <Fragment>
-      <ErrorModal error={error} onClear={errorHandler} />
+      <ErrorModal error={error} onClear={clearError} />
       <Card className={Style["authentication"]}>
         {isLoading && <LoadingSpinner asOverlay={true} />}
         <h2>Login Rerquired</h2>
@@ -121,7 +109,7 @@ const Auth = (props) => {
             id="password"
             type="password"
             label="PASSWORD"
-            validators={[VALIDATOR_MINLENGTH(5)]}
+            validators={[VALIDATOR_MINLENGTH(6)]}
             errorText="Please Enter a valid email password, at least 5 characters"
             onInput={inputChangeHandler}
           />
