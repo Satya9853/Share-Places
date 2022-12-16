@@ -74,9 +74,8 @@ const Auth = (props) => {
 
     try {
       const responseData = await sendRequest(URL, options.method, options.body, options.headers);
-      console.log(responseData);
 
-      auth.login(responseData.user.id);
+      auth.login(responseData.user.id, responseData.token);
     } catch (error) {}
   };
 

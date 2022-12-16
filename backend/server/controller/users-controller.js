@@ -19,7 +19,9 @@ exports.userSignup = async (req, res, next) => {
   const user = await UserModel.create(req.body);
   if (!user) throw Error();
 
-  res.status(StatusCodes.CREATED).json({ user: { name: user.name, id: user._id } });
+  const token = await user.createJWT();
+
+  res.status(StatusCodes.CREATED).json({ user: { name: user.name, email: user.email, id: user._id }, token });
 };
 
 exports.userLogin = async (req, res, next) => {
@@ -31,5 +33,11 @@ exports.userLogin = async (req, res, next) => {
 
   if (!user) throw new UnauthenticatedError("Invalid Credentials");
 
-  res.status(StatusCodes.OK).json({ user: { name: user.name, id: user._id } });
+  const isPasswordCorrect = await user.comparePassword(password);
+
+  if (!isPasswordCorrect) throw new UnauthenticatedError("Invalid Credentials");
+
+  const token = await user.createJWT();
+
+  res.status(StatusCodes.OK).json({ user: { name: user.name, email: user.email, id: user._id }, token });
 };

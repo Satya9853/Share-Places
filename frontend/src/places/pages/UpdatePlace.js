@@ -60,7 +60,7 @@ const UpdatePlace = () => {
     const options = {
       method: "PATCH",
       body: JSON.stringify(updatePlaceData),
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${auth.token}` },
     };
 
     try {

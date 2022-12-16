@@ -47,9 +47,10 @@ const NewPlace = () => {
     const options = {
       method: "POST",
       body: placeData,
+      headers: { Authorization: `Bearer ${auth.token}` },
     };
     try {
-      const responseData = await sendRequest(URL, options.method, options.body);
+      const responseData = await sendRequest(URL, options.method, options.body, options.headers);
       console.log(responseData);
       // redirect user to different page
       history.push("/");

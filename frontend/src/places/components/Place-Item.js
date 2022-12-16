@@ -37,10 +37,11 @@ const PlaceItem = (props) => {
 
     const options = {
       method: "DELETE",
+      headers: { Authorization: `Bearer ${auth.token}` },
     };
 
     try {
-      await sendRequest(URL, options.method);
+      await sendRequest(URL, options.method, null, options.headers);
       props.onDelete(props.id);
     } catch (error) {}
   };
