@@ -21,9 +21,11 @@ exports.getPlaceByID = async (req, res, next) => {
 exports.getPlacesByUserID = async (req, res, next) => {
   const userID = req.params.userID;
 
-  let places = await PlaceModel.find({ creator: userID });
+  const user = await UserModel.findById(userID);
 
-  if (!places || places.length === 0) throw new NotFoundError(`No place was found with userID ${userID}`);
+  if (!user) throw new NotFoundError(`No user was found with userID ${userID}`);
+
+  let places = await PlaceModel.find({ creator: userID });
 
   places = places.map((place) => place.toObject({ getters: true }));
   res.status(StatusCodes.OK).json({ places: places });

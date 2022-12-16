@@ -8,7 +8,7 @@ import ErrorModal from "../../shared/components/UI-Elements/ErrorModal";
 import LoadingSpinner from "../../shared/components/UI-Elements/LoadingSpinner";
 
 const UserPlaces = () => {
-  const [loadedPlaces, setLoadedPlaces] = useState(undefined);
+  const [loadedPlaces, setLoadedPlaces] = useState();
 
   const { isLoading, error, sendRequest, clearError } = useHttpClient();
   const userId = useParams().userId;

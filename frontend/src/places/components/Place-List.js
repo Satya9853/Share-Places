@@ -7,8 +7,8 @@ const PlaceList = (props) => {
   //! if No Items or places are found
   if (props.items.length === 0) {
     return (
-      <div className={`${Style["place-list"]} center`}>
-        <Card>
+      <div className={`${Style["place-list"]} ${Style["center"]}`}>
+        <Card className={Style["layout"]}>
           <h2>No places found. Maybe create one?</h2>
           <Button to="/places/new">Share Place</Button>
         </Card>

@@ -3,9 +3,11 @@ const fs = require("fs");
 
 const errorHandlingMiddleware = (error, req, res, next) => {
   // rollback changes in file if we are encountering any error
-  fs.unlink(req.file.path, (error) => {
-    console.log(error);
-  });
+  if (req.file) {
+    fs.unlink(req.file.path, (error) => {
+      console.log(error);
+    });
+  }
 
   let customError = {
     statusCode: error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR,

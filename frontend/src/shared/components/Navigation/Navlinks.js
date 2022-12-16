@@ -27,11 +27,13 @@ const Navlinks = () => {
           </NavLink>
         </li>
       )}
-      <li>
-        <NavLink to="/auth" activeClassName={Style.active}>
-          AUTHENTICATE
-        </NavLink>
-      </li>
+      {!auth.isLoggedIn && (
+        <li>
+          <NavLink to="/auth" activeClassName={Style.active}>
+            AUTHENTICATE
+          </NavLink>
+        </li>
+      )}
       {auth.isLoggedIn && (
         <li>
           <button onClick={auth.logout}>LOGOUT</button>
