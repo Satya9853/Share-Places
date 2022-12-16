@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const { StatusCodes } = require("http-status-codes");
 const { validationResult } = require("express-validator");
+const fs = require("fs");
 
 const { BadRequestError, NotFoundError, CustomApiError } = require("../errors/index");
 const getCoordsForAddress = require("../util/location");
@@ -33,6 +34,9 @@ exports.createPlace = async (req, res, next) => {
   if (!error.isEmpty()) throw new BadRequestError("Invalid inputs passed, please check your data");
 
   const { address, creator } = req.body;
+
+  // updating images in body
+  req.body.image = req.file.path;
 
   const user = await UserModel.findById(creator);
   if (!user) throw new NotFoundError("User Not Found ");
@@ -82,6 +86,11 @@ exports.deletePlaceByID = async (req, res, next) => {
   const transaction_session = await mongoose.startSession();
   transaction_session.startTransaction();
   const deletedPlace = await PlaceModel.findOneAndRemove({ _id: placeID }, { session: transaction_session }).populate("creator");
+  // deleting image from upload folder
+  const imagePath = deletedPlace.image;
+  fs.unlink(imagePath, (error) => {
+    console.log(error);
+  });
   if (!deletedPlace) throw new NotFoundError(`No place was found with placeID :${placeID}`);
   await deletedPlace.creator.places.pull(deletedPlace);
   await deletedPlace.creator.save({ session: transaction_session });

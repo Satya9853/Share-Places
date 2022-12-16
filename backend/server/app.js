@@ -12,6 +12,7 @@ const xss = require("xss-clean");
 // required packages
 const express = require("express");
 const bodyParser = require("body-parser");
+const path = require("path");
 
 // local imports
 const connectDB = require("./db/connectDB");
@@ -21,6 +22,9 @@ const routeNotFoundMiddleware = require("./middleware/route-not-found-middleware
 const errorHandlingMiddleware = require("./middleware/error-handler-middleware");
 
 const app = express();
+
+// handling static files
+app.use("/uploads/images", express.static(path.join("uploads", "images")));
 
 // package middleware
 app.use(bodyParser.json());

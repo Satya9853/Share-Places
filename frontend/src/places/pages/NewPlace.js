@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, useContext } from "react";
 import { useHistory } from "react-router-dom";
 
 import { useForm } from "../../shared/hooks/form-hook";
@@ -9,14 +9,19 @@ import { VALIDATOR_MINLENGTH, VALIDATOR_REQUIRE } from "../../shared/util/Valida
 import Button from "../../shared/components/Form-Elements/Button";
 import ErrorModal from "../../shared/components/UI-Elements/ErrorModal";
 import LoadingSpinner from "../../shared/components/UI-Elements/LoadingSpinner";
+import { AuthContext } from "../../shared/context/auth-context";
+import ImageUpload from "../../shared/components/Form-Elements/ImageUpload";
 import Style from "./PlaceForm.module.css";
 
 const NewPlace = () => {
+  const auth = useContext(AuthContext);
+
   const [formState, inputChangeHandler] = useForm(
     {
       title: { value: "", isValid: false },
       description: { value: "", isValid: false },
       address: { value: "", isValid: false },
+      image: { value: null, isValid: false },
     },
     false
   );
@@ -30,20 +35,21 @@ const NewPlace = () => {
 
     const URL = "http://localhost:5000/api/v1/places";
 
-    const placeData = {
-      title: formState.inputs.title.value,
-      description: formState.inputs.description.value,
-      address: formState.inputs.address.value,
-      creator: "6399fb4409e7d57602198279",
-    };
+    // creating a formData to  send a  image file  to the backend in the request
+
+    const placeData = new FormData();
+    placeData.append("title", formState.inputs.title.value);
+    placeData.append("description", formState.inputs.description.value);
+    placeData.append("address", formState.inputs.address.value);
+    placeData.append("creator", auth.userID);
+    placeData.append("image", formState.inputs.image.value);
 
     const options = {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(placeData),
+      body: placeData,
     };
     try {
-      const responseData = await sendRequest(URL, options.method, options.body, options.headers);
+      const responseData = await sendRequest(URL, options.method, options.body);
       console.log(responseData);
       // redirect user to different page
       history.push("/");
@@ -82,6 +88,7 @@ const NewPlace = () => {
           errorText="Please enter a valid address"
           onInput={inputChangeHandler}
         />
+        <ImageUpload id="image" onInput={inputChangeHandler} errorText="Please provide and image." />
         <Button type="submit" disabled={!formState.isValid}>
           ADD PLACE
         </Button>

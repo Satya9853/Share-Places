@@ -7,6 +7,7 @@ import Input from "../../shared/components/Form-Elements/Input";
 import Button from "../../shared/components/Form-Elements/Button";
 import ErrorModal from "../../shared/components/UI-Elements/ErrorModal";
 import LoadingSpinner from "../../shared/components/UI-Elements/LoadingSpinner";
+import ImageUpload from "../../shared/components/Form-Elements/ImageUpload";
 import { VALIDATOR_EMAIL, VALIDATOR_MINLENGTH, VALIDATOR_REQUIRE } from "../../shared/util/Validator";
 import { AuthContext } from "../../shared/context/auth-context";
 import Style from "./Auth.module.css";
@@ -34,9 +35,9 @@ const Auth = (props) => {
 
   const switchModeHandler = () => {
     if (!isLoginMode) {
-      setFormData({ ...formState.inputs, name: undefined }, formState.inputs.email.isValid && formState.inputs.password.isValid);
+      setFormData({ ...formState.inputs, name: undefined, image: undefined }, formState.inputs.email.isValid && formState.inputs.password.isValid);
     } else {
-      setFormData({ ...formState.inputs, name: { value: "", isValid: false } }, false);
+      setFormData({ ...formState.inputs, name: { value: "", isValid: false }, image: { value: null, isValid: false } }, false);
     }
     setIsLoginMode((prev) => !prev);
   };
@@ -52,20 +53,23 @@ const Auth = (props) => {
         email: formState.inputs.email.value,
         password: formState.inputs.password.value,
       };
+      userData = JSON.stringify(userData);
     } else {
-      URL = "http://localhost:5000/api/v1/users/signup";
+      /// in case of singup
 
-      userData = {
-        name: formState.inputs.name.value,
-        email: formState.inputs.email.value,
-        password: formState.inputs.password.value,
-      };
+      URL = "http://localhost:5000/api/v1/users/signup";
+      // creating new formData only in signup because it involves images which are not json but binary
+      userData = new FormData();
+      userData.append("name", formState.inputs.name.value);
+      userData.append("email", formState.inputs.email.value);
+      userData.append("password", formState.inputs.password.value);
+      userData.append("image", formState.inputs.image.value);
     }
 
     const options = {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(userData),
+      headers: isLoginMode ? { "Content-Type": "application/json" } : {}, // fetch automatically sets headers when we use FormData()
+      body: userData,
     };
 
     try {
@@ -95,6 +99,7 @@ const Auth = (props) => {
               onInput={inputChangeHandler}
             />
           )}
+          {!isLoginMode && <ImageUpload id="image" center={true} onInput={inputChangeHandler} errorText="Please upload an image" />}
           <Input
             element="input"
             id="email"

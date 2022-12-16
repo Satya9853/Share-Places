@@ -14,7 +14,10 @@ exports.getUsers = async (req, res, next) => {
 };
 
 exports.userSignup = async (req, res, next) => {
+  // modifying the image file
+  req.body.image = req.file.path;
   const user = await UserModel.create(req.body);
+  if (!user) throw Error();
 
   res.status(StatusCodes.CREATED).json({ user: { name: user.name, id: user._id } });
 };
