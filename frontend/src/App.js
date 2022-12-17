@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Route, Redirect, Switch } from "react-router-dom";
-import { useState, useCallback } from "react";
+
+import { useAuth } from "./shared/hooks/auth-hook";
 
 import Users from "./user/pages/Users";
 import NewPlace from "./places/pages/NewPlace";
@@ -10,18 +11,7 @@ import Auth from "./user/pages/Auth";
 import { AuthContext } from "./shared/context/auth-context";
 
 function App() {
-  const [token, setToken] = useState(null);
-  const [userID, setUserID] = useState(null);
-
-  const login = useCallback((uid, token) => {
-    setToken(token);
-    setUserID(uid);
-  }, []);
-
-  const logout = useCallback(() => {
-    setToken(null);
-    setUserID(null);
-  }, []);
+  const { token, login, logout, userID } = useAuth();
 
   let routes;
 

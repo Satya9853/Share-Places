@@ -35,12 +35,14 @@ exports.createPlace = async (req, res, next) => {
   const error = validationResult(req);
   if (!error.isEmpty()) throw new BadRequestError("Invalid inputs passed, please check your data");
 
-  const { address, creator } = req.body;
+  const { address } = req.body;
+
+  const userID = req.user._id;
 
   // updating images in body
   req.body.image = req.file.path;
 
-  const user = await UserModel.findById(creator);
+  const user = await UserModel.findById(userID);
   if (!user) throw new NotFoundError("User Not Found ");
 
   // if we dont get any result for location coordinates recieves a badrequest object
@@ -50,9 +52,10 @@ exports.createPlace = async (req, res, next) => {
   const newPlace = {
     ...req.body,
     location: coordinates,
+    creator: userID,
   };
 
-  //  setting a transaction session which will roll back is any of the task fails
+  //  setting a transaction session which will roll back if any of the task fails
   const transaction_session = await mongoose.startSession();
   transaction_session.startTransaction();
   const createdPlace = await PlaceModel.create([newPlace], { session: transaction_session });
@@ -71,10 +74,12 @@ exports.updatePlaceByID = async (req, res, next) => {
 
   const { title, description } = req.body;
   const placeID = req.params.placeID;
-  console.log(placeID);
-  const updatedPlace = await PlaceModel.findByIdAndUpdate(placeID, { title: title, description: description }, { new: true, runValidators: true });
-
-  console.log(updatedPlace);
+  const userID = req.user._id;
+  const updatedPlace = await PlaceModel.findOneAndUpdate(
+    { _id: placeID, creator: userID },
+    { title: title, description: description },
+    { new: true, runValidators: true }
+  );
 
   if (!updatedPlace) throw new NotFoundError(`No place was found with placeID :${placeID}`);
 
@@ -83,11 +88,12 @@ exports.updatePlaceByID = async (req, res, next) => {
 
 exports.deletePlaceByID = async (req, res, next) => {
   const placeID = req.params.placeID;
+  const userID = req.user._id;
 
   //  setting a transaction session which will roll back is any of the task fails
   const transaction_session = await mongoose.startSession();
   transaction_session.startTransaction();
-  const deletedPlace = await PlaceModel.findOneAndRemove({ _id: placeID }, { session: transaction_session }).populate("creator");
+  const deletedPlace = await PlaceModel.findOneAndRemove({ _id: placeID, creator: userID }, { session: transaction_session }).populate("creator");
   // deleting image from upload folder
   const imagePath = deletedPlace.image;
   fs.unlink(imagePath, (error) => {

@@ -41,7 +41,6 @@ const NewPlace = () => {
     placeData.append("title", formState.inputs.title.value);
     placeData.append("description", formState.inputs.description.value);
     placeData.append("address", formState.inputs.address.value);
-    placeData.append("creator", auth.userID);
     placeData.append("image", formState.inputs.image.value);
 
     const options = {
