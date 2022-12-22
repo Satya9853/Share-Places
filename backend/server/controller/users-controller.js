@@ -14,10 +14,14 @@ exports.getUsers = async (req, res, next) => {
 };
 
 exports.userSignup = async (req, res, next) => {
+  const { name, email, password } = req.body;
+  if (!name) throw new BadRequestError("Please Provide the name");
+  if (!email) throw new BadRequestError("Please Provide the email");
+  if (!password) throw new BadRequestError("Please Provide the password");
+
   // modifying the image file
   req.body.image = req.file.path;
-  const user = await UserModel.create(req.body);
-  if (!user) throw Error();
+  const user = await UserModel.create({ ...req.body });
 
   const token = await user.createJWT();
 
@@ -31,11 +35,11 @@ exports.userLogin = async (req, res, next) => {
 
   const user = await UserModel.findOne({ email });
 
-  if (!user) throw new UnauthenticatedError("Invalid Credentials");
+  if (!user) throw new UnauthenticatedError(`No user was fond with email: ${email}`);
 
   const isPasswordCorrect = await user.comparePassword(password);
 
-  if (!isPasswordCorrect) throw new UnauthenticatedError("Invalid Credentials");
+  if (!isPasswordCorrect) throw new UnauthenticatedError("Incorrect Password");
 
   const token = await user.createJWT();
 

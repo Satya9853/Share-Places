@@ -63,7 +63,6 @@ exports.createPlace = async (req, res, next) => {
   transaction_session.commitTransaction();
 
   if (!createdPlace) throw new Error();
-  console.log(createdPlace);
 
   res.status(StatusCodes.CREATED).json({ place: createdPlace });
 };

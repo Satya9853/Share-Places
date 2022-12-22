@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const placeSchema = new mongoose.Schema({
   title: { type: String, required: [true, "Please provide the title"] },
 
-  description: { type: String, required: [true, "Please provide the description"] },
+  description: { type: String, required: [true, "Please provide the description"], minlength: 5 },
 
   image: { type: String, required: [true, "Please provide the Image"] },
 

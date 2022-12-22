@@ -6,7 +6,6 @@ const { UnauthenticatedError } = require("../errors/index");
 const auth = async (req, res, next) => {
   if (req.method === "OPTIONS") return next();
   const authHeader = req.headers.authorization;
-  console.log(authHeader);
   if (!authHeader || !authHeader.startsWith("Bearer")) throw new UnauthenticatedError("Aunthentication Failed");
 
   const token = authHeader.split(" ")[1];
