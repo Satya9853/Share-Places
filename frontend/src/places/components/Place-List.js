@@ -1,16 +1,23 @@
+import { useContext } from "react";
+
 import Card from "../../shared/components/UI-Elements/Card";
 import PlaceItem from "./Place-Item";
 import Button from "../../shared/components/Form-Elements/Button";
+import { AuthContext } from "../../shared/context/auth-context";
 import Style from "./Place-List.module.css";
 
 const PlaceList = (props) => {
+  const auth = useContext(AuthContext);
+
   //! if No Items or places are found
+  const message = auth.userID === props.user ? "No places found. Maybe create one?" : "No Place was found...";
+
   if (props.items.length === 0) {
     return (
       <div className={`${Style["place-list"]} ${Style["center"]}`}>
         <Card className={Style["layout"]}>
-          <h2>No places found. Maybe create one?</h2>
-          <Button to="/places/new">Share Place</Button>
+          <h2>{message}</h2>
+          {auth.userID === props.user && <Button to="/places/new">Share Place</Button>}
         </Card>
       </div>
     );
